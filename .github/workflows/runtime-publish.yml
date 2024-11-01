@@ -11,10 +11,9 @@ env:
 
 jobs:
   build:
-    build:
-      runs-on: ubuntu-latest
-      container:
-        image: docker:latest
+    runs-on: ubuntu-latest
+    container:
+      image: docker:latest
     steps:
       - uses: actions/checkout@v4
 
