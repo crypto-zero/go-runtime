@@ -1,0 +1,43 @@
+image: docker:latest
+
+include:
+  - project: 'toolkit/ci-build-scripts'
+    file: 'base-variables.yml'
+    ref: main
+
+test:
+  extends: .base
+  stage: test
+  script:
+    - docker pull golang:alpine
+    - docker run --rm golang:alpine go version
+
+build:
+  extends: .base
+  stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - when: on_success
+  script:
+    - apk add git
+    - docker buildx create --use --name build --node build --driver-opt network=host
+    - docker buildx build --push --platform linux/amd64,linux/arm64 -t $IMAGE_TAG .
+
+build:on-schedule:
+  extends: .base
+  stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - when: manual
+  script:
+    - apk add git curl
+    - LATEST_GO_VERSION=`curl -s 'https://go.dev/VERSION?m=text' 2>&1 | head -n 1 | cut -c 3-`
+    - LATEST_IMAGE_TAG=${IMAGE_PATH}:v${LATEST_GO_VERSION}
+    - >
+      if [ -n "$(docker buildx imagetools inspect ${LATEST_IMAGE_TAG})" ]; then
+        echo 'Latest go version is already built'
+        exit 0
+      fi
+    - docker buildx create --use --name build --node build --driver-opt network=host
+    - docker buildx build --push --platform linux/amd64,linux/arm64 --build-arg VERSION=${LATEST_GO_VERSION} -t ${LATEST_IMAGE_TAG} .
