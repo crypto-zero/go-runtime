@@ -20,7 +20,7 @@ RUN apk update && \
     apk upgrade && \
     apk add tzdata ca-certificates proxychains-ng lzo-dev bind-tools gzip jq curl && \
     update-ca-certificates && \
-    apk upgrade \
+    apk upgrade
 
 # change timezone to asia/shanghai
 # RUN echo "Asia/Shanghai" > /etc/timezone
