@@ -26,5 +26,5 @@ RUN apk update && \
 # RUN echo "Asia/Shanghai" > /etc/timezone
 # RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-CMD ["docker-entrypoint"]
+# CMD ["docker-entrypoint"]
 
