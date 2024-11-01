@@ -1,4 +1,4 @@
-name: golang runtime build
+name: golang latest version runtime build and push
 
 on:
   workflow_dispatch:
